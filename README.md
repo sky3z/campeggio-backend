@@ -95,7 +95,7 @@ Al primo avvio, il `DataInitializer` crea automaticamente:
 | `STRIPE_SECRET_KEY` | Chiave segreta Stripe | *(opzionale)* |
 | `STRIPE_WEBHOOK_SECRET` | Segreto webhook Stripe | *(opzionale)* |
 | `WEATHER_API_KEY` | API key OpenWeatherMap | *(opzionale, usa mock)* |
-| `WEATHER_CITY` | Città per il meteo | `Rimini,IT` |
+| `WEATHER_CITY` | Città per il meteo | `Castello Tesino,IT` |
 | `SENDGRID_API_KEY` | API key SendGrid | *(opzionale, usa log)* |
 | `SENDGRID_FROM_EMAIL` | Email mittente | `noreply@campeggio.it` |
 
@@ -162,7 +162,7 @@ Tutti gli endpoint sono disponibili nella **Postman Collection** inclusa in `doc
 | Metodo | Endpoint | Accesso | Descrizione |
 |---|---|---|---|
 | GET | `/api/users/me` | Autenticato | Profilo utente corrente |
-| PATCH | `/api/users/me` | Autenticato | Aggiorna avatar |
+| PATCH | `/api/users/me/avatar` | Autenticato | Aggiorna avatar |
 | GET | `/api/admin/users` | Admin | Lista tutti gli utenti |
 | GET | `/api/admin/users/{id}` | Admin | Dettaglio utente |
 | DELETE | `/api/admin/users/{id}` | Admin | Elimina utente |
@@ -229,7 +229,7 @@ Tutti gli endpoint sono disponibili nella **Postman Collection** inclusa in `doc
 
 | Metodo | Endpoint | Accesso | Descrizione |
 |---|---|---|---|
-| GET | `/api/weather` | Pubblico | Meteo città di default (Rimini) |
+| GET | `/api/weather` | Pubblico | Meteo città di default (Castello Tesino) |
 | GET | `/api/weather/{city}` | Pubblico | Meteo per città specifica |
 
 ### Report Admin

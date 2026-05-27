@@ -161,12 +161,16 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{baseUrl}}/accommodations?page=0&size=10",
+              "raw": "{{baseUrl}}/accommodations?page=0&size=10&sortBy=pricePerNight&sortDir=asc",
               "host": ["{{baseUrl}}"],
               "path": ["accommodations"],
               "query": [
                 { "key": "page", "value": "0" },
-                { "key": "size", "value": "10" }
+                { "key": "size", "value": "10" },
+                { "key": "sortBy", "value": "pricePerNight" },
+                { "key": "sortDir", "value": "asc" },
+                { "key": "type", "value": "PIAZZOLA", "disabled": true },
+                { "key": "status", "value": "DISPONIBILE", "disabled": true }
               ]
             }
           }
