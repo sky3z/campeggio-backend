@@ -1,5 +1,6 @@
 package com.campeggio.reservations.controller;
 
+import com.campeggio.common.PagedResponse;
 import com.campeggio.reservations.dto.*;
 import com.campeggio.reservations.service.PrenotazioneService;
 import com.campeggio.users.entity.*;
@@ -19,15 +20,15 @@ public class PrenotazioneController {
     private final PrenotazioneService service;
 
     @GetMapping
-    public ResponseEntity<Page<PrenotazioneDTO>> getAll(
+    public ResponseEntity<PagedResponse<PrenotazioneDTO>> getAll(
             @AuthenticationPrincipal User user,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         if (user.getRole() == Role.OSPITE) {
-            return ResponseEntity.ok(service.getByOspite(user.getId(), pageable));
+            return ResponseEntity.ok(PagedResponse.from(service.getByOspite(user.getId(), pageable)));
         }
-        return ResponseEntity.ok(service.getAll(pageable));
+        return ResponseEntity.ok(PagedResponse.from(service.getAll(pageable)));
     }
 
     @GetMapping("/{id}")

@@ -2,13 +2,15 @@ package com.campeggio.accommodations.repository;
 
 import com.campeggio.accommodations.entity.*;
 import org.springframework.data.jpa.repository.*;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-public interface AccommodationRepository extends JpaRepository<Accommodation, Long> {
+public interface AccommodationRepository extends JpaRepository<Accommodation, Long>,
+        JpaSpecificationExecutor<Accommodation> {
 
     // Query disponibilità: trova alloggi NON prenotati nelle date indicate
     @Query("""

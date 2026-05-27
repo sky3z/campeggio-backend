@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,8 +23,27 @@ public class AccommodationService {
     private final AccommodationRepository repository;
     private final UserRepository userRepository;
 
-    public Page<AccommodationDTO> getAll(Pageable pageable) {
-        return repository.findAll(pageable).map(AccommodationDTO::from);
+    public Page<AccommodationDTO> getAll(Pageable pageable, String type, AccommodationStatus status) {
+        Specification<Accommodation> spec = Specification.where(null);
+
+        if (type != null && !type.isBlank()) {
+            Class<? extends Accommodation> entityClass = mapTypeToClass(type);
+            spec = spec.and((root, query, cb) -> cb.equal(root.type(), entityClass));
+        }
+        if (status != null) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("status"), status));
+        }
+
+        return repository.findAll(spec, pageable).map(AccommodationDTO::from);
+    }
+
+    private Class<? extends Accommodation> mapTypeToClass(String type) {
+        return switch (type.toUpperCase()) {
+            case "PIAZZOLA"       -> Piazzola.class;
+            case "BUNGALOW"       -> Bungalow.class;
+            case "PIAZZOLA_FISSA" -> PiazzolaFissa.class;
+            default               -> Accommodation.class;
+        };
     }
 
     public AccommodationDTO getById(Long id) {

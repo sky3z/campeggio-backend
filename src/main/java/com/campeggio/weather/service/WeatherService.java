@@ -19,7 +19,7 @@ public class WeatherService {
     @Value("${weather.api.key:}")
     private String apiKey;
 
-    @Value("${weather.api.city:Rimini,IT}")
+    @Value("${weather.api.city:Castello Tesino,IT}")
     private String defaultCity;
 
     private static final String BASE_URL = "https://api.openweathermap.org/data/2.5";

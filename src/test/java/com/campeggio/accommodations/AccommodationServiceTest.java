@@ -12,6 +12,7 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -33,15 +34,16 @@ class AccommodationServiceTest {
     // ─── GET ALL ──────────────────────────────────────────────────────────────
 
     @Test
-    @DisplayName("getAll: restituisce pagina di alloggi come DTO")
+    @DisplayName("getAll: restituisce pagina di alloggi come DTO (nessun filtro)")
     void getAll_restituisceLista() {
         // arrange
         Piazzola p = piazzolaFake();
         Pageable pageable = PageRequest.of(0, 10);
-        when(accommodationRepo.findAll(pageable)).thenReturn(new PageImpl<>(List.of(p)));
+        when(accommodationRepo.findAll(any(Specification.class), eq(pageable)))
+                .thenReturn(new PageImpl<>(List.of(p)));
 
         // act
-        Page<AccommodationDTO> result = service.getAll(pageable);
+        Page<AccommodationDTO> result = service.getAll(pageable, null, null);
 
         // assert
         assertThat(result.getContent()).hasSize(1);
@@ -54,13 +56,49 @@ class AccommodationServiceTest {
     void getAll_listaVuota() {
         // arrange
         Pageable pageable = PageRequest.of(0, 10);
-        when(accommodationRepo.findAll(pageable)).thenReturn(Page.empty());
+        when(accommodationRepo.findAll(any(Specification.class), eq(pageable)))
+                .thenReturn(Page.empty());
 
         // act
-        Page<AccommodationDTO> result = service.getAll(pageable);
+        Page<AccommodationDTO> result = service.getAll(pageable, null, null);
 
         // assert
         assertThat(result.getContent()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("getAll: filtro per tipo PIAZZOLA")
+    void getAll_filtraPerTipo() {
+        // arrange
+        Piazzola p = piazzolaFake();
+        Pageable pageable = PageRequest.of(0, 10);
+        when(accommodationRepo.findAll(any(Specification.class), eq(pageable)))
+                .thenReturn(new PageImpl<>(List.of(p)));
+
+        // act
+        Page<AccommodationDTO> result = service.getAll(pageable, "PIAZZOLA", null);
+
+        // assert
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getContent().get(0).getType()).isEqualTo("PIAZZOLA");
+        verify(accommodationRepo).findAll(any(Specification.class), eq(pageable));
+    }
+
+    @Test
+    @DisplayName("getAll: filtro per status DISPONIBILE")
+    void getAll_filtraPerStatus() {
+        // arrange
+        Piazzola p = piazzolaFake();
+        Pageable pageable = PageRequest.of(0, 10);
+        when(accommodationRepo.findAll(any(Specification.class), eq(pageable)))
+                .thenReturn(new PageImpl<>(List.of(p)));
+
+        // act
+        Page<AccommodationDTO> result = service.getAll(pageable, null, AccommodationStatus.DISPONIBILE);
+
+        // assert
+        assertThat(result.getContent()).hasSize(1);
+        verify(accommodationRepo).findAll(any(Specification.class), eq(pageable));
     }
 
     // ─── GET BY ID ────────────────────────────────────────────────────────────
