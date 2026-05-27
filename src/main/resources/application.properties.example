@@ -1,0 +1,20 @@
+# Database PostgreSQL
+spring.datasource.url=jdbc:postgresql://localhost:5432/campeggio_db
+spring.datasource.username=TUO_USERNAME
+spring.datasource.password=TUA_PASSWORD
+
+# JWT
+app.jwt.secret=CHIAVE_SEGRETA_ALMENO_32_CARATTERI
+app.jwt.expiration-ms=86400000
+
+# OpenWeatherMap — ottieni chiave su openweathermap.org
+weather.api.key=TUA_API_KEY
+weather.api.city=NomeCitta,IT
+
+# Stripe — ottieni chiave su dashboard.stripe.com
+stripe.api.key=sk_test_...
+stripe.webhook.secret=whsec_...
+
+# SendGrid — ottieni chiave su app.sendgrid.com
+sendgrid.api.key=SG....
+sendgrid.from.email=noreply@tuocampeggio.it

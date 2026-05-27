@@ -1,0 +1,567 @@
+{
+  "info": {
+    "name": "Campeggio API",
+    "_postman_id": "campeggio-backend-collection",
+    "description": "Collection completa per il gestionale campeggio — Spring Boot 3 + PostgreSQL",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080/api", "type": "string" },
+    { "key": "token", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "🔐 Auth",
+      "item": [
+        {
+          "name": "Register (Ospite)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Mario\",\n  \"surname\": \"Rossi\",\n  \"email\": \"mario.rossi@example.com\",\n  \"password\": \"Password123!\",\n  \"phone\": \"+39 333 1234567\",\n  \"nationality\": \"Italiana\",\n  \"birthDate\": \"1990-05-15\",\n  \"documentNumber\": \"AB1234567\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  var json = pm.response.json();",
+                  "  pm.collectionVariables.set('token', json.token);",
+                  "  console.log('Token salvato:', json.token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"mario.rossi@example.com\",\n  \"password\": \"Password123!\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  var json = pm.response.json();",
+                  "  pm.collectionVariables.set('token', json.token);",
+                  "  console.log('Token salvato:', json.token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@campeggio.it\",\n  \"password\": \"Admin123!\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  var json = pm.response.json();",
+                  "  pm.collectionVariables.set('token', json.token);",
+                  "  console.log('Token admin salvato:', json.token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "👤 Utenti",
+      "item": [
+        {
+          "name": "GET /users/me",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/users/me", "host": ["{{baseUrl}}"], "path": ["users", "me"] }
+          }
+        },
+        {
+          "name": "PATCH /users/me (avatar)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/users/me", "host": ["{{baseUrl}}"], "path": ["users", "me"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"avatarUrl\": \"https://example.com/avatar.jpg\"\n}"
+            }
+          }
+        },
+        {
+          "name": "GET /admin/users (tutti)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /admin/users/:id",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/admin/users/1", "host": ["{{baseUrl}}"], "path": ["admin", "users", "1"] }
+          }
+        },
+        {
+          "name": "DELETE /admin/users/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/admin/users/2", "host": ["{{baseUrl}}"], "path": ["admin", "users", "2"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏕️ Alloggi",
+      "item": [
+        {
+          "name": "GET /accommodations",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/accommodations?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["accommodations"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /accommodations/:id",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/accommodations/1", "host": ["{{baseUrl}}"], "path": ["accommodations", "1"] }
+          }
+        },
+        {
+          "name": "GET /accommodations/available",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/accommodations/available?checkIn=2025-07-01&checkOut=2025-07-07&capacity=2&type=PIAZZOLA",
+              "host": ["{{baseUrl}}"],
+              "path": ["accommodations", "available"],
+              "query": [
+                { "key": "checkIn", "value": "2025-07-01" },
+                { "key": "checkOut", "value": "2025-07-07" },
+                { "key": "capacity", "value": "2" },
+                { "key": "type", "value": "PIAZZOLA" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /accommodations (Piazzola) — ADMIN",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/accommodations", "host": ["{{baseUrl}}"], "path": ["accommodations"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Piazzola A1\",\n  \"description\": \"Piazzola per camper vicino ai servizi\",\n  \"maxCapacity\": 4,\n  \"pricePerNight\": 25.00,\n  \"type\": \"PIAZZOLA\",\n  \"tipoPiazzola\": \"CAMPER\",\n  \"surfaceM2\": 40,\n  \"hasElectricity\": true,\n  \"hasWater\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /accommodations (Bungalow) — ADMIN",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/accommodations", "host": ["{{baseUrl}}"], "path": ["accommodations"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Bungalow B3\",\n  \"description\": \"Bungalow con vista mare\",\n  \"maxCapacity\": 5,\n  \"pricePerNight\": 85.00,\n  \"type\": \"BUNGALOW\",\n  \"rooms\": 2,\n  \"beds\": 4,\n  \"hasBathroom\": true,\n  \"hasKitchen\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "PATCH /accommodations/:id/status — ADMIN/STAFF",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/accommodations/1/status?status=MANUTENZIONE",
+              "host": ["{{baseUrl}}"],
+              "path": ["accommodations", "1", "status"],
+              "query": [{ "key": "status", "value": "MANUTENZIONE" }]
+            }
+          }
+        },
+        {
+          "name": "DELETE /accommodations/:id — ADMIN",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/accommodations/1", "host": ["{{baseUrl}}"], "path": ["accommodations", "1"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📋 Prenotazioni",
+      "item": [
+        {
+          "name": "GET /reservations",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/reservations?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["reservations"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /reservations/:id",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/reservations/1", "host": ["{{baseUrl}}"], "path": ["reservations", "1"] }
+          }
+        },
+        {
+          "name": "POST /reservations — OSPITE",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/reservations", "host": ["{{baseUrl}}"], "path": ["reservations"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accommodationId\": 1,\n  \"checkInDate\": \"2025-07-10\",\n  \"checkOutDate\": \"2025-07-17\"\n}"
+            }
+          }
+        },
+        {
+          "name": "PATCH /reservations/:id/confirm — ADMIN/STAFF",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/reservations/1/confirm", "host": ["{{baseUrl}}"], "path": ["reservations", "1", "confirm"] }
+          }
+        },
+        {
+          "name": "PATCH /reservations/:id/cancel",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/reservations/1/cancel", "host": ["{{baseUrl}}"], "path": ["reservations", "1", "cancel"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "💳 Pagamenti",
+      "item": [
+        {
+          "name": "POST /payments/intent/:prenotazioneId",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/payments/intent/1", "host": ["{{baseUrl}}"], "path": ["payments", "intent", "1"] }
+          }
+        },
+        {
+          "name": "GET /payments/prenotazione/:id",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/payments/prenotazione/1", "host": ["{{baseUrl}}"], "path": ["payments", "prenotazione", "1"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🛶 Noleggi",
+      "item": [
+        {
+          "name": "GET /rentals/items (catalogo pubblico)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/rentals/items", "host": ["{{baseUrl}}"], "path": ["rentals", "items"] }
+          }
+        },
+        {
+          "name": "GET /rentals",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/rentals?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["rentals"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /rentals — OSPITE",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/rentals", "host": ["{{baseUrl}}"], "path": ["rentals"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"articoloId\": 1,\n  \"dataInizio\": \"2025-07-10\",\n  \"dataFine\": \"2025-07-12\",\n  \"quantita\": 2\n}"
+            }
+          }
+        },
+        {
+          "name": "PATCH /rentals/:id/return — ADMIN/STAFF",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/rentals/1/return", "host": ["{{baseUrl}}"], "path": ["rentals", "1", "return"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🍹 Bar",
+      "item": [
+        {
+          "name": "GET /bar/orders (ADMIN/STAFF)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/bar/orders?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["bar", "orders"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /bar/orders/active (ADMIN/STAFF)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/bar/orders/active", "host": ["{{baseUrl}}"], "path": ["bar", "orders", "active"] }
+          }
+        },
+        {
+          "name": "GET /bar/orders/mine (OSPITE)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/bar/orders/mine", "host": ["{{baseUrl}}"], "path": ["bar", "orders", "mine"] }
+          }
+        },
+        {
+          "name": "POST /bar/orders — OSPITE",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/bar/orders", "host": ["{{baseUrl}}"], "path": ["bar", "orders"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"numeroPiazzola\": \"A1\",\n  \"note\": \"Senza ghiaccio per favore\",\n  \"voci\": [\n    {\n      \"nomeArticolo\": \"Coca Cola\",\n      \"quantita\": 2,\n      \"prezzoUnitario\": 2.50\n    },\n    {\n      \"nomeArticolo\": \"Tramezzino\",\n      \"quantita\": 1,\n      \"prezzoUnitario\": 3.00\n    }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "PATCH /bar/orders/:id/status — ADMIN/STAFF",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/bar/orders/1/status?stato=IN_PREPARAZIONE",
+              "host": ["{{baseUrl}}"],
+              "path": ["bar", "orders", "1", "status"],
+              "query": [{ "key": "stato", "value": "IN_PREPARAZIONE" }]
+            }
+          }
+        },
+        {
+          "name": "PATCH /bar/orders/:id/cancel",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/bar/orders/1/cancel", "host": ["{{baseUrl}}"], "path": ["bar", "orders", "1", "cancel"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏠 Check-in / Check-out",
+      "item": [
+        {
+          "name": "GET /checkins",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/checkins?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["checkins"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /checkins/in — ADMIN/STAFF",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/checkins/in", "host": ["{{baseUrl}}"], "path": ["checkins", "in"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prenotazioneId\": 1,\n  \"note\": \"Ospite arrivato alle 15:30\"\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /checkins/out — ADMIN/STAFF",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/checkins/out", "host": ["{{baseUrl}}"], "path": ["checkins", "out"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prenotazioneId\": 1,\n  \"note\": \"Partenza regolare\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🌤️ Meteo",
+      "item": [
+        {
+          "name": "GET /weather (default city)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/weather", "host": ["{{baseUrl}}"], "path": ["weather"] }
+          }
+        },
+        {
+          "name": "GET /weather/:city",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/weather/Roma,IT", "host": ["{{baseUrl}}"], "path": ["weather", "Roma,IT"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📊 Report Admin",
+      "item": [
+        {
+          "name": "GET /admin/reports/occupancy",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/admin/reports/occupancy?startDate=2025-07-01&endDate=2025-07-31",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "reports", "occupancy"],
+              "query": [
+                { "key": "startDate", "value": "2025-07-01" },
+                { "key": "endDate", "value": "2025-07-31" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /admin/reports/revenue",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/admin/reports/revenue?start=2025-01-01&end=2025-12-31",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "reports", "revenue"],
+              "query": [
+                { "key": "start", "value": "2025-01-01" },
+                { "key": "end", "value": "2025-12-31" }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

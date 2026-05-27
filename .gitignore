@@ -1,0 +1,13 @@
+target/
+*.class
+*.jar
+*.war
+.idea/
+*.iml
+.vscode/
+.mvn/
+!.mvn/wrapper/
+mvnw
+mvnw.cmd
+src/main/resources/application.properties
+!src/main/resources/application-test.properties
