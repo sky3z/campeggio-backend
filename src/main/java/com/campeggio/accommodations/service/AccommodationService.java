@@ -9,6 +9,9 @@ import com.campeggio.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -19,8 +22,8 @@ public class AccommodationService {
     private final AccommodationRepository repository;
     private final UserRepository userRepository;
 
-    public List<AccommodationDTO> getAll() {
-        return repository.findAll().stream().map(AccommodationDTO::from).toList();
+    public Page<AccommodationDTO> getAll(Pageable pageable) {
+        return repository.findAll(pageable).map(AccommodationDTO::from);
     }
 
     public AccommodationDTO getById(Long id) {

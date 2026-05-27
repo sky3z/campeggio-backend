@@ -10,6 +10,8 @@ import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.data.domain.*;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -21,8 +23,16 @@ public class AccommodationController {
     private final AccommodationService service;
 
     @GetMapping
-    public ResponseEntity<List<AccommodationDTO>> getAll() {
-        return ResponseEntity.ok(service.getAll());
+    public ResponseEntity<Page<AccommodationDTO>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "pricePerNight") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return ResponseEntity.ok(service.getAll(pageable));
     }
 
     @GetMapping("/{id}")

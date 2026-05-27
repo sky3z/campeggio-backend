@@ -11,6 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.data.domain.*;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -31,32 +33,34 @@ class AccommodationServiceTest {
     // ─── GET ALL ──────────────────────────────────────────────────────────────
 
     @Test
-    @DisplayName("getAll: restituisce lista di alloggi come DTO")
+    @DisplayName("getAll: restituisce pagina di alloggi come DTO")
     void getAll_restituisceLista() {
         // arrange
         Piazzola p = piazzolaFake();
-        when(accommodationRepo.findAll()).thenReturn(List.of(p));
+        Pageable pageable = PageRequest.of(0, 10);
+        when(accommodationRepo.findAll(pageable)).thenReturn(new PageImpl<>(List.of(p)));
 
         // act
-        List<AccommodationDTO> result = service.getAll();
+        Page<AccommodationDTO> result = service.getAll(pageable);
 
         // assert
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).getName()).isEqualTo("Piazzola C1");
-        assertThat(result.get(0).getType()).isEqualTo("PIAZZOLA");
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getContent().get(0).getName()).isEqualTo("Piazzola C1");
+        assertThat(result.getContent().get(0).getType()).isEqualTo("PIAZZOLA");
     }
 
     @Test
-    @DisplayName("getAll: nessun alloggio restituisce lista vuota")
+    @DisplayName("getAll: nessun alloggio restituisce pagina vuota")
     void getAll_listaVuota() {
         // arrange
-        when(accommodationRepo.findAll()).thenReturn(List.of());
+        Pageable pageable = PageRequest.of(0, 10);
+        when(accommodationRepo.findAll(pageable)).thenReturn(Page.empty());
 
         // act
-        List<AccommodationDTO> result = service.getAll();
+        Page<AccommodationDTO> result = service.getAll(pageable);
 
         // assert
-        assertThat(result).isEmpty();
+        assertThat(result.getContent()).isEmpty();
     }
 
     // ─── GET BY ID ────────────────────────────────────────────────────────────
